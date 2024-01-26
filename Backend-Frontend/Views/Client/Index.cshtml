@@ -1,0 +1,147 @@
+﻿@model IEnumerable<Test.EntityFramework.Models.ClientStatusVM>
+@{
+    int prevpage = ViewBag.page - 1;
+    if (prevpage <= 0)
+    {
+        prevpage = 1;
+    }
+    int nextpage = ViewBag.page + 1;
+    if (nextpage > ViewBag.size)
+    {
+        nextpage = ViewBag.size;
+    }
+    string searchterm = ViewBag.searchterm;
+}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3 ">
+
+<div class="row">
+    <div class="col-12 text-center"><h4 class="text-white py-2"> Client List</h4></div>
+
+</div>
+    </div>
+<div class="card-body p-4">
+    <div class="row pb-3">
+            <div class="col-6 col-md-6" >
+                <div  id="filter-partial"><partial name="/Views/Client/_FilterPartial.cshtml" /></div>
+            </div>
+                
+            <div class="col-3 text-end">
+                    <a asp-controller="Client" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                        Back to List
+                    </a>
+                </div>
+            <div class="col-3 text-end">
+            <a asp-controller="Client" asp-action="AddEdit" class="btn btn-primary">
+                <i class="bi bi-plus-circle-fill"></i> Create New Client
+            </a>
+        </div>
+            
+    </div>
+
+        <div id="filtered-content"><partial name="/Views/Client/_ClientsTablePartial.cshtml" model="Model" /></div>
+        <table id="clients-table">
+            <!-- Render your initial client data here -->
+            <!-- ... -->
+        </table>
+       <div>
+
+            
+            
+                <ul class="pagination">
+                    <li class="page-item">
+                    <a class="page-link" href="/Client/Index?page=@prevpage&searchterm=@searchterm" " tabindex="-1">Previous</a>
+                    </li>
+                @for (int i = 0; i < ViewBag.size; i++)
+                {
+                    if ((i + 1) == ViewBag.page)
+                    {
+                        <li class="page-item active">
+                    <a class="page-link" href="/Client/Index?page=@(i+1)&searchterm=@searchterm"> <span class="sr-only"></span>@(i + 1)</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item">
+                    <a class="page-link" href="/Client/Index?page=@(i+1)&searchterm=@searchterm"> <span class="sr-only"></span>@(i + 1)</a>
+                        </li>
+                        
+                    }
+                }
+                    
+                    
+                    <li class="page-item">
+                    <a class="page-link" href="/Client/index?page=@nextpage&searchterm=@searchterm">Next</a>
+                    </li>
+                </ul>
+            
+       </div>
+
+    </div>
+</div>
+
+    <script>
+        $(document).ready(function () {
+        $('#filter-partial').on('click','#search-button', function () {
+            console.log("Search button clicked");
+                // Get filter criteria
+            var searchterm = $('#search-term').val();
+              
+
+                // Get page and page size
+            var page = $(this).data('page');
+            var size = $(this).data('size');
+            var url = '/Client/Index';
+           
+            
+            url += '?page=' + encodeURIComponent(page);
+           // url += '&size=' + encodeURIComponent(size);
+            url += '&searchterm=' + encodeURIComponent(searchterm);
+                // Make an AJAX request to filter clients
+                $.ajax({
+                url: url,
+                    type: 'POST',
+                    // data: {
+                   
+                    //     page: page,
+                    //     size: size,
+                    // searchterm: searchterm
+                    // },
+                    success: function (result) {
+                        // Update the filtered content area with the new table data
+                        $('#filtered-content').html(result);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+    
+
+
+
+@* @section Scripts {}
+
+                                // function searchClient() {
+        //    var searchname= document.getElementById("search").value;
+        //     $.ajax({
+        //         url: '/Client/Index/' + searchname,
+
+        //         //contentType: 'application/html; charset=utf-8',
+        //         type: 'GET'
+        //         // dataType: 'html'
+        //         , success: function (result) {
+        //             //document.getElementById("clientTableContainer").innerHTML(result);
+        //             $("#clientTableContainer").html(result);
+        //             //console.log("coco");
+        //         },
+        //         error: function (xhr, status) {
+        //             alert(status);
+        //         }
+        //     });
+        // }
+
+    // </script> *@
